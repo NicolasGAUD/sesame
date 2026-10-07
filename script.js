@@ -33,7 +33,7 @@ function renderMenu(){
   menuSection.textContent = "";
   for (let i = 0; i < menuTraduit.length; i++) {
     const card = document.createElement("article");
-    card.classList.add("product");
+    menuTraduit[i].available ? card.classList.add("product") : card.classList.add("product", "is-sold-out");
     const category = document.createElement("span");
     category.classList.add("product-category");
     category.textContent = menuTraduit[i].category
@@ -48,6 +48,7 @@ function renderMenu(){
     card.appendChild(productPrice);
     const btnAdd = document.createElement("button");
     btnAdd.classList.add("product-add");
+    menuTraduit[i].available ? btnAdd.disabled = false : btnAdd.disabled = true;
     btnAdd.textContent = "Ajouter";
     card.appendChild(btnAdd);
     menuSection.appendChild(card);
