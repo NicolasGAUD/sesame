@@ -203,8 +203,35 @@ filterByCategory();
 
 
 // Étape 7 · Le prénom du client
+// En HTML, l'événement submit ne se déclenche que sur une balise <form>
+// const customerForm = document.querySelector("#customer-form");
+// const customerName = document.querySelector("#customer-name").value.trim();
+// customerForm.addEventListener("submit", (e) => {
+//   const ticketTitle = document.querySelector("#ticket-title");
+//   ticketTitle.textContent = `Ticket de ${customerName}`;
+// })
 
+// 1. On sélectionne le formulaire global et l'input
+const customerForm = document.querySelector("#customer-form");
+const customerInput = document.querySelector("#customer-name");
+const customerError = document.querySelector("#customer-error");
+const ticketTitle = document.querySelector("#ticket-title");
 
+// 2. On écoute le 'submit' sur le FORMULAIRE
+customerForm.addEventListener("submit", (e) => {
+  // 3. 💡 CRITIQUE : Empêche la page de se recharger et de tout perdre
+  e.preventDefault();
+
+  // 4. On récupère la valeur de l'input AU MOMENT du clic de validation
+  const customerName = customerInput.value.trim();
+  if (customerName === "") {
+    customerError.textContent = "Erreur de saisie ! ";
+    ticketTitle.textContent = "Ticket"
+  }
+  else {
+    ticketTitle.textContent = `Ticket de ${customerName}`;
+  }
+});
 
 // Étape 8 · Le code promo
 
