@@ -83,12 +83,6 @@ const menuSection = document.querySelector("#menu");
 // "all" par défaut si aucun argument n'est fourni
 function renderMenu(categoryValue = "all"){
   menuSection.textContent = "";
-  // Dictionnaire pour faire correspondre la valeur du bouton anglais avec le texte français de menuTraduit
-  const equivalences = {
-    coffee: "Café",
-    tea: "Thé & autres",
-    pastry: "Pâtisserie"
-  };
   for (let i = 0; i < menuTraduit.length; i++) {
     const product = menuTraduit[i];
     // On trouve la traduction attendue pour la comparaison
