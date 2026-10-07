@@ -139,7 +139,6 @@ function renderTicket(){
   for (let i = 0; i < order.lines.length; i++) {
     const line = order.lines[i];
     const listElt = document.createElement("li");
-    const linePriceEuros = formatPrice(line.price * line.quantity);
 
     const lineName = document.createElement("span");
     lineName.classList.add("line-name");
