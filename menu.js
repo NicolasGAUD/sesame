@@ -1,5 +1,5 @@
 // La carte du comptoir. Les prix sont en centimes.
-const menu = [
+export const menu = [
   { id: 1, name: "Espresso", category: "coffee", price: 220, available: true },
   { id: 2, name: "Noisette", category: "coffee", price: 250, available: true },
   { id: 3, name: "Allongé", category: "coffee", price: 260, available: true },
