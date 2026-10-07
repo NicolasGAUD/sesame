@@ -1,4 +1,4 @@
-import { menu } from './menu.js';
+import {menu} from './menu.js';
 
 const order = {
   lines: [],
@@ -204,13 +204,6 @@ filterByCategory();
 
 // Étape 7 · Le prénom du client
 // En HTML, l'événement submit ne se déclenche que sur une balise <form>
-// const customerForm = document.querySelector("#customer-form");
-// const customerName = document.querySelector("#customer-name").value.trim();
-// customerForm.addEventListener("submit", (e) => {
-//   const ticketTitle = document.querySelector("#ticket-title");
-//   ticketTitle.textContent = `Ticket de ${customerName}`;
-// })
-
 // 1. On sélectionne le formulaire global et l'input
 const customerForm = document.querySelector("#customer-form");
 const customerInput = document.querySelector("#customer-name");
@@ -235,5 +228,65 @@ customerForm.addEventListener("submit", (e) => {
 
 // Étape 8 · Le code promo
 
+// 1. Sélection des éléments (vérifiez bien les ID dans votre HTML !)
+const promoForm = document.querySelector("#promo-form"); // Corrigé : promo-form
+const promoInput = document.querySelector("#promo-code");
+const promoMessage = document.querySelector("#promo-message"); // Corrigé : promo-message
+const discountLabel = document.querySelector("#ticket-discount");
+const ticketTotal = document.querySelector("#ticket-total");
+
+// 2. Écoute du 'submit' sur le formulaire
+promoForm.addEventListener("submit", (e) => {
+  e.preventDefault(); // Empêche le rechargement de la page
+
+  const inputValue = promoInput.value.trim();
+
+  // Cas 1 : Le champ est vide
+  if (inputValue === "") {
+    promoMessage.textContent = "Erreur de saisie !";
+    return; // On s'arrête ici
+  }
+
+  // Cas 2 : On compare tout en minuscules 💡
+  if (inputValue.toLowerCase() !== "barista") {
+    promoMessage.textContent = "Code inconnu !";
+    return; // On s'arrête ici
+  }
+
+  // Cas 3 : Le code est valide !
+  promoMessage.textContent = "Code promo appliqué !";
+
+  // Exemple : Si le code "BARISTA" donne 10% de réduction (0.10)
+  const reductionCentimes = Math.round(order.getSubtotal() * 0.10);
+
+  const reductionEuros = formatPrice(reductionCentimes)
+  discountLabel.textContent = `-${reductionEuros}`;
+
+  ticketTotal.textContent = formatPrice(Number(order.getSubtotal()) - Number(reductionCentimes));
+});
+
+
+// const promoForm = document.querySelector("#promo-form");
+// const promoInput = document.querySelector("#promo-code");
+// const promoMessage = document.querySelector("#promo-message");
+// const discountLabel = document.querySelector("#ticket-discount");
+//
+// // 2. On écoute le 'submit' sur le FORMULAIRE
+// promoForm.addEventListener("submit", (e) => {
+//   // 3. 💡 CRITIQUE : Empêche la page de se recharger et de tout perdre
+//   e.preventDefault();
+//
+//   // 4. On récupère la valeur de l'input AU MOMENT du clic de validation
+//   const inputValue = promoInput.value.trim();
+//   if (inputValue === "") {
+//     promoMessage.textContent = "Erreur de saisie ! ";
+//   }
+//   else if (inputValue.toLowerCase() !== "BARISTA") {
+//     promoMessage.textContent = "Code inconnu ! ";
+//   }
+//   else {
+//     discountLabel.textContent = order.getSubtotal();
+//   }
+// });
 
 // Bonus
