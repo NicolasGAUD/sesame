@@ -1,121 +1,30 @@
 import {menu} from './menu.js';
-
-const promoInput = document.querySelector("#promo-code");
-
-const order = {
-  lines: [],
-
-  add(product) {
-    // 1. On cherche si le produit est déjà présent dans le panier
-    const existingLine = this.lines.find(line => line.id === product.id);
-
-    if (existingLine) {
-      // 2. S'il existe, on augmente sa quantité
-      existingLine.quantity++;
-    } else {
-      // 3. S'il n'existe pas, on l'ajoute en créant une nouvelle ligne propre
-      this.lines.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: 1 // Initialisation à 1
-      });
-    }
-  },
-  getSubtotal() {
-    // 0 est la valeur de départ de l'accumulateur
-    return this.lines.reduce((total, line) => total + (line.price * line.quantity), 0);
-  },
-  // Étape 5 · Retirer une ligne
-  // remove(id) {
-    // if (this.lines.length === 0) {
-    //   promoInput.value = '';
-    // }
-    // else{
-    //   for (let i = 0; i < this.lines.length; i++) {
-    //     // 1. On cherche l'élément correspondant à l'ID
-    //     if (this.lines[i].id === id) {
-    //
-    //       // 2. Si la quantité est supérieure à 1, on décrémente uniquement
-    //       if (this.lines[i].quantity > 1) {
-    //         this.lines[i].quantity--; // Correction ici : lines[i]
-    //       } else {
-    //         // 3. Sinon (quantité égale à 1), on retire complètement la ligne
-    //         this.lines.splice(i, 1);
-    //       }
-    //
-    //       // 4. On arrête immédiatement la fonction
-    //       return;
-    //     }
-    //   }
-    // }
-    remove(id) {
-      // 1. On cherche et on met à jour l'élément dans le panier
-      for (let i = 0; i < this.lines.length; i++) {
-        if (this.lines[i].id === id) {
-          if (this.lines[i].quantity > 1) {
-            this.lines[i].quantity--;
-          } else {
-            this.lines.splice(i, 1);
-          }
-          // return; // break sort de la boucle, return de la fcontion
-          // si return, le code 2. ne serait pas executé.
-          break; // On sort de la boucle dès qu'on a trouvé et traité l'élément
-        }
-      }
-
-      // 2. CORRECTION : On vérifie SI le panier est vide APRÈS la suppression
-      if (this.lines.length === 0 && typeof promoInput !== 'undefined') {
-        promoInput.value = '';
-      }
-    },
-  getReduction(){
-    if (this.lines.length > 0) {
-      const discountLabel = document.querySelector("#ticket-discount");
-      const reductionCentimes = Math.round(this.getSubtotal() * 0.10);
-      const reductionEuros = formatPrice(reductionCentimes)
-      discountLabel.textContent = `-${reductionEuros}`;
-    }
-    else{
-      document.querySelector("#ticket-discount").textContent = formatPrice(0);
-    }
-  }
-};
+import {order} from './order.js';
+import {categoryLabel} from './utils.js';
 
 //Afin de pouvoir débugguer order.lines dans la console.
 window.order = order;
+
+// 📦 1. TOUT LE DOM REGROUPÉ EN HAUT DU FICHIER
+const documentElements = {
+  promoInput: document.querySelector("#promo-code")
+};
 
 // Fournie : transforme 220 en "2,20 €". Tu n'as pas à la modifier.
 function formatPrice(cents) {
   return (cents / 100).toFixed(2).replace(".", ",") + " €";
 }
 
-function categoryLabel(category){
-  // On passe en minuscules une seule fois pour alléger le code
-  const lowerCategory = category.toLowerCase();
-    if (lowerCategory === "coffee") {
-      return "Café";
-    }
-    if (lowerCategory === "tea") {
-      return "Thé & autres";
-    }
-    if (lowerCategory === "pastry") {
-      return "Patisserie";
-    }
-    return category;
-}
 const translatedMenu = menu.map(item => {
   return {
     ...item,
-    category: categoryLabel(item.category) // Utilisation de votre fonction
+    category: categoryLabel(item.category)
   };
 });
 
-// Étape 1 · Afficher la carte
-const menuSection = document.querySelector("#menu");
-
 // "all" par défaut si aucun argument n'est fourni
 function renderMenu(categoryValue = "all"){
+  const menuSection= document.querySelector("#menu")
   menuSection.textContent = "";
   for (let i = 0; i < translatedMenu.length; i++) {
     const product = translatedMenu[i];
