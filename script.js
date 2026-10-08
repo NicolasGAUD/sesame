@@ -99,6 +99,7 @@ function renderTicket(){
     btnRemove.textContent = " - ";
     btnRemove.addEventListener("click", () => {
       order.remove(line.id);
+      //TODO
       order.getReduction();
       renderTicket();
     });
