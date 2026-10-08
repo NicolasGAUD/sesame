@@ -153,6 +153,7 @@ function renderMenu(categoryValue = "all"){
 }
 
 renderMenu("all");
+// === renderMenu(); see arg default
 
 // Étape 4 · Afficher le ticket
 
