@@ -1,19 +1,14 @@
 import {menu} from './menu.js';
 import {order} from './order.js';
-import {categoryLabel} from './utils.js';
+import {categoryLabel, formatPrice} from './utils.js';
 
 //Afin de pouvoir débugguer order.lines dans la console.
 window.order = order;
 
 // 📦 1. TOUT LE DOM REGROUPÉ EN HAUT DU FICHIER
-const documentElements = {
-  promoInput: document.querySelector("#promo-code")
-};
-
-// Fournie : transforme 220 en "2,20 €". Tu n'as pas à la modifier.
-function formatPrice(cents) {
-  return (cents / 100).toFixed(2).replace(".", ",") + " €";
-}
+// const documentElements = {
+//   promoInput: document.querySelector("#promo-code")
+// };
 
 const translatedMenu = menu.map(item => {
   return {
@@ -27,42 +22,47 @@ function renderMenu(categoryValue = "all"){
   const menuSection= document.querySelector("#menu")
   menuSection.textContent = "";
   for (let i = 0; i < translatedMenu.length; i++) {
+
     const product = translatedMenu[i];
-    // On trouve la traduction attendue pour la comparaison
-    // const expectedTranslatedCategory = equivalences[categoryValue];
     const expectedTranslatedCategory = categoryLabel(categoryValue);
+
     if(product.category === expectedTranslatedCategory || categoryValue.toLowerCase() === "all") {
       const card = document.createElement("article");
       translatedMenu[i].available ? card.classList.add("product") : card.classList.add("product", "is-sold-out");
+
       const category = document.createElement("span");
       category.classList.add("product-category");
       category.textContent = translatedMenu[i].category
       card.appendChild(category);
+
       const productName = document.createElement("h3");
       productName.classList.add("product-name");
       productName.textContent = translatedMenu[i].name;
       card.appendChild(productName);
+
       const productPrice = document.createElement("p");
       productPrice.classList.add("product-name");
       productPrice.textContent = formatPrice(translatedMenu[i].price);
       card.appendChild(productPrice);
+
       const btnAdd = document.createElement("button");
       btnAdd.classList.add("product-add");
       translatedMenu[i].available ? btnAdd.disabled = false : btnAdd.disabled = true;
-      // Au clic, on appelle la méthode de l'objet
+
       btnAdd.addEventListener("click", () => {
         order.add({id: translatedMenu[i].id, name: translatedMenu[i].name, price: translatedMenu[i].price});
         renderTicket();
       });
       btnAdd.textContent = "Ajouter";
+
       card.appendChild(btnAdd);
       menuSection.appendChild(card);
     }
   }
 }
 
-renderMenu("all");
-// === renderMenu(); see arg default
+renderMenu();
+// === renderMenu("all"); see arg default
 
 // Étape 4 · Afficher le ticket
 

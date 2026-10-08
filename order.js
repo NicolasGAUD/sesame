@@ -1,3 +1,9 @@
+import {formatPrice} from './utils.js';
+
+const orderElements = {
+    promoInput: document.querySelector("#promo-code")
+};
+
 export const order = {
     lines: [],
 
@@ -22,29 +28,6 @@ export const order = {
         // 0 est la valeur de départ de l'accumulateur
         return this.lines.reduce((total, line) => total + (line.price * line.quantity), 0);
     },
-    // Étape 5 · Retirer une ligne
-    // remove(id) {
-    // if (this.lines.length === 0) {
-    //   promoInput.value = '';
-    // }
-    // else{
-    //   for (let i = 0; i < this.lines.length; i++) {
-    //     // 1. On cherche l'élément correspondant à l'ID
-    //     if (this.lines[i].id === id) {
-    //
-    //       // 2. Si la quantité est supérieure à 1, on décrémente uniquement
-    //       if (this.lines[i].quantity > 1) {
-    //         this.lines[i].quantity--; // Correction ici : lines[i]
-    //       } else {
-    //         // 3. Sinon (quantité égale à 1), on retire complètement la ligne
-    //         this.lines.splice(i, 1);
-    //       }
-    //
-    //       // 4. On arrête immédiatement la fonction
-    //       return;
-    //     }
-    //   }
-    // }
     remove(id) {
         // 1. On cherche et on met à jour l'élément dans le panier
         for (let i = 0; i < this.lines.length; i++) {
@@ -62,7 +45,7 @@ export const order = {
 
         // 2. CORRECTION : On vérifie SI le panier est vide APRÈS la suppression
         if (this.lines.length === 0 && typeof promoInput !== 'undefined') {
-            promoInput.value = '';
+            orderElements.promoInput.value = '';
         }
     },
     getReduction(){
