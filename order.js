@@ -1,7 +1,8 @@
 import {formatPrice} from './utils.js';
 
 const orderElements = {
-    promoInput: document.querySelector("#promo-code")
+    promoInput: document.querySelector("#promo-code"),
+    discountLabel: document.querySelector("#ticket-discount")
 };
 
 export const order = {
@@ -44,16 +45,15 @@ export const order = {
         }
 
         // 2. CORRECTION : On vérifie SI le panier est vide APRÈS la suppression
-        if (this.lines.length === 0 && typeof promoInput !== 'undefined') {
+        if (this.lines.length === 0 && typeof orderElements.promoInput !== 'undefined') {
             orderElements.promoInput.value = '';
         }
     },
     getReduction(){
         if (this.lines.length > 0) {
-            const discountLabel = document.querySelector("#ticket-discount");
             const reductionCentimes = Math.round(this.getSubtotal() * 0.10);
             const reductionEuros = formatPrice(reductionCentimes)
-            discountLabel.textContent = `-${reductionEuros}`;
+            orderElements.discountLabel.textContent = `-${reductionEuros}`;
         }
         else{
             document.querySelector("#ticket-discount").textContent = formatPrice(0);

@@ -5,11 +5,6 @@ import {categoryLabel, formatPrice} from './utils.js';
 //Afin de pouvoir débugguer order.lines dans la console.
 window.order = order;
 
-// 📦 1. TOUT LE DOM REGROUPÉ EN HAUT DU FICHIER
-// const documentElements = {
-//   promoInput: document.querySelector("#promo-code")
-// };
-
 const translatedMenu = menu.map(item => {
   return {
     ...item,
@@ -89,12 +84,15 @@ function renderTicket(){
     const lineName = document.createElement("span");
     lineName.classList.add("line-name");
     lineName.textContent = line.name;
+
     const lineQty = document.createElement("span");
     lineQty.classList.add("line-qty");
     lineQty.textContent = ` x ${line.quantity} `;
+
     const linePrice = document.createElement("span");
     linePrice.classList.add("line-price");
     linePrice.textContent = formatPrice(line.price * line.quantity);
+
     const btnRemove = document.createElement("button");
     btnRemove.classList.add("line-remove");
     btnRemove.ariaLabel = `Retirer un ${line.name}`;
@@ -104,18 +102,17 @@ function renderTicket(){
       order.getReduction();
       renderTicket();
     });
+
     listElt.appendChild(lineName);
     listElt.appendChild(lineQty);
     listElt.appendChild(linePrice);
     listElt.appendChild(btnRemove);
 
-    // Ajout à la liste HTML
     ticketLines.appendChild(listElt);
 
     // Calcul et affichage du total général de la commande
     const total = formatPrice(order.getSubtotal());
     ticketTotal.textContent = `${total}`;
-
   }
 }
 
@@ -175,7 +172,6 @@ customerForm.addEventListener("submit", (e) => {
 
 function checkPromoCode(code){
 
-
   // Cas 1 : Le champ est vide
   if (code === "") {
     promoMessage.textContent = "Erreur de saisie !";
@@ -201,35 +197,10 @@ const ticketTotal = document.querySelector("#ticket-total");
 promoForm.addEventListener("submit", (e) => {
   e.preventDefault(); // Empêche le rechargement de la page
 
-  checkPromoCode(promoInput.value.trim());
+  checkPromoCode(order.promoInput.value.trim());
 
   order.getReduction();
 
   ticketTotal.textContent = formatPrice(Number(order.getSubtotal()) - Number(reductionCentimes));
 });
 
-
-// const promoForm = document.querySelector("#promo-form");
-// const promoInput = document.querySelector("#promo-code");
-// const promoMessage = document.querySelector("#promo-message");
-// const discountLabel = document.querySelector("#ticket-discount");
-//
-// // 2. On écoute le 'submit' sur le FORMULAIRE
-// promoForm.addEventListener("submit", (e) => {
-//   // 3. 💡 CRITIQUE : Empêche la page de se recharger et de tout perdre
-//   e.preventDefault();
-//
-//   // 4. On récupère la valeur de l'input AU MOMENT du clic de validation
-//   const inputValue = promoInput.value.trim();
-//   if (inputValue === "") {
-//     promoMessage.textContent = "Erreur de saisie ! ";
-//   }
-//   else if (inputValue.toLowerCase() !== "BARISTA") {
-//     promoMessage.textContent = "Code inconnu ! ";
-//   }
-//   else {
-//     discountLabel.textContent = order.getSubtotal();
-//   }
-// });
-
-// Bonus
