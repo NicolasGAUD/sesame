@@ -21,31 +21,54 @@ const order = {
         quantity: 1 // Initialisation à 1
       });
     }
-    //TODO
   },
   getSubtotal() {
     // 0 est la valeur de départ de l'accumulateur
     return this.lines.reduce((total, line) => total + (line.price * line.quantity), 0);
   },
   // Étape 5 · Retirer une ligne
-  remove(id) {
-    for (let i = 0; i < this.lines.length; i++) {
-      // 1. On cherche l'élément correspondant à l'ID
-      if (this.lines[i].id === id) {
-
-        // 2. Si la quantité est supérieure à 1, on décrémente uniquement
-        if (this.lines[i].quantity > 1) {
-          this.lines[i].quantity--; // Correction ici : lines[i]
-        } else {
-          // 3. Sinon (quantité égale à 1), on retire complètement la ligne
-          this.lines.splice(i, 1);
+  // remove(id) {
+    // if (this.lines.length === 0) {
+    //   promoInput.value = '';
+    // }
+    // else{
+    //   for (let i = 0; i < this.lines.length; i++) {
+    //     // 1. On cherche l'élément correspondant à l'ID
+    //     if (this.lines[i].id === id) {
+    //
+    //       // 2. Si la quantité est supérieure à 1, on décrémente uniquement
+    //       if (this.lines[i].quantity > 1) {
+    //         this.lines[i].quantity--; // Correction ici : lines[i]
+    //       } else {
+    //         // 3. Sinon (quantité égale à 1), on retire complètement la ligne
+    //         this.lines.splice(i, 1);
+    //       }
+    //
+    //       // 4. On arrête immédiatement la fonction
+    //       return;
+    //     }
+    //   }
+    // }
+    remove(id) {
+      // 1. On cherche et on met à jour l'élément dans le panier
+      for (let i = 0; i < this.lines.length; i++) {
+        if (this.lines[i].id === id) {
+          if (this.lines[i].quantity > 1) {
+            this.lines[i].quantity--;
+          } else {
+            this.lines.splice(i, 1);
+          }
+          // return; // break sort de la boucle, return de la fcontion
+          // si return, le code 2. ne serait pas executé.
+          break; // On sort de la boucle dès qu'on a trouvé et traité l'élément
         }
-
-        // 4. On arrête immédiatement la fonction
-        return;
       }
-    }
-  },
+
+      // 2. CORRECTION : On vérifie SI le panier est vide APRÈS la suppression
+      if (this.lines.length === 0 && typeof promoInput !== 'undefined') {
+        promoInput.value = '';
+      }
+    },
   getReduction(){
     if (this.lines.length > 0) {
       const discountLabel = document.querySelector("#ticket-discount");
@@ -58,9 +81,6 @@ const order = {
     }
   }
 };
-
-
-
 
 //Afin de pouvoir débugguer order.lines dans la console.
 window.order = order;
@@ -147,6 +167,8 @@ function renderTicket(){
 
   if (order.lines.length === 0) {     // On vide la liste des produits
     ticketEmpty.textContent = "Le ticket est vide."; // On écrit le texte
+    // was missing just this line for me to search a long time
+    promoMessage.textContent = "";
     return;                                // On arrête la fonction ici
   }
 
@@ -242,6 +264,7 @@ customerForm.addEventListener("submit", (e) => {
 });
 
 function checkPromoCode(code){
+
 
   // Cas 1 : Le champ est vide
   if (code === "") {
