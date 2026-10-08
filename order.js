@@ -1,6 +1,6 @@
 import {formatPrice} from './utils.js';
 
-const orderElements = {
+export const orderElements = {
     promoInput: document.querySelector("#promo-code"),
     discountLabel: document.querySelector("#ticket-discount")
 };

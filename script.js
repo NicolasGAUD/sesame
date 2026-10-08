@@ -1,5 +1,5 @@
 import {menu} from './menu.js';
-import {order} from './order.js';
+import {order, orderElements} from './order.js';
 import {categoryLabel, formatPrice} from './utils.js';
 
 //Afin de pouvoir débugguer order.lines dans la console.
@@ -197,7 +197,7 @@ const ticketTotal = document.querySelector("#ticket-total");
 promoForm.addEventListener("submit", (e) => {
   e.preventDefault(); // Empêche le rechargement de la page
 
-  checkPromoCode(order.promoInput.value.trim());
+  checkPromoCode(orderElements.promoInput.value.trim());
 
   order.getReduction();
 
