@@ -243,15 +243,14 @@ customerForm.addEventListener("submit", (e) => {
 
 function checkPromoCode(code){
 
-  const inputValue = promoInput.value;
   // Cas 1 : Le champ est vide
-  if (inputValue === "") {
+  if (code === "") {
     promoMessage.textContent = "Erreur de saisie !";
     return; // On s'arrête ici
   }
 
   // Cas 2 : On compare tout en minuscules 💡
-  if (inputValue.toLowerCase() !== "barista") {
+  if (code.toLowerCase() !== "barista") {
     promoMessage.textContent = "Code inconnu !";
     return; // On s'arrête ici
   }
