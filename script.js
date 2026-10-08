@@ -1,5 +1,7 @@
 import {menu} from './menu.js';
 
+const promoInput = document.querySelector("#promo-code");
+
 const order = {
   lines: [],
 
@@ -19,6 +21,7 @@ const order = {
         quantity: 1 // Initialisation à 1
       });
     }
+    //TODO
   },
   getSubtotal() {
     // 0 est la valeur de départ de l'accumulateur
@@ -41,6 +44,17 @@ const order = {
         // 4. On arrête immédiatement la fonction
         return;
       }
+    }
+  },
+  getReduction(){
+    if (this.lines.length > 0) {
+      const discountLabel = document.querySelector("#ticket-discount");
+      const reductionCentimes = Math.round(this.getSubtotal() * 0.10);
+      const reductionEuros = formatPrice(reductionCentimes)
+      discountLabel.textContent = `-${reductionEuros}`;
+    }
+    else{
+      document.querySelector("#ticket-discount").textContent = formatPrice(0);
     }
   }
 };
@@ -70,7 +84,7 @@ function categoryLabel(category){
     }
     return category;
 }
-const menuTraduit = menu.map(item => {
+const translatedMenu = menu.map(item => {
   return {
     ...item,
     category: categoryLabel(item.category) // Utilisation de votre fonction
@@ -83,32 +97,32 @@ const menuSection = document.querySelector("#menu");
 // "all" par défaut si aucun argument n'est fourni
 function renderMenu(categoryValue = "all"){
   menuSection.textContent = "";
-  for (let i = 0; i < menuTraduit.length; i++) {
-    const product = menuTraduit[i];
+  for (let i = 0; i < translatedMenu.length; i++) {
+    const product = translatedMenu[i];
     // On trouve la traduction attendue pour la comparaison
     // const expectedTranslatedCategory = equivalences[categoryValue];
     const expectedTranslatedCategory = categoryLabel(categoryValue);
     if(product.category === expectedTranslatedCategory || categoryValue.toLowerCase() === "all") {
       const card = document.createElement("article");
-      menuTraduit[i].available ? card.classList.add("product") : card.classList.add("product", "is-sold-out");
+      translatedMenu[i].available ? card.classList.add("product") : card.classList.add("product", "is-sold-out");
       const category = document.createElement("span");
       category.classList.add("product-category");
-      category.textContent = menuTraduit[i].category
+      category.textContent = translatedMenu[i].category
       card.appendChild(category);
       const productName = document.createElement("h3");
       productName.classList.add("product-name");
-      productName.textContent = menuTraduit[i].name;
+      productName.textContent = translatedMenu[i].name;
       card.appendChild(productName);
       const productPrice = document.createElement("p");
       productPrice.classList.add("product-name");
-      productPrice.textContent = formatPrice(menuTraduit[i].price);
+      productPrice.textContent = formatPrice(translatedMenu[i].price);
       card.appendChild(productPrice);
       const btnAdd = document.createElement("button");
       btnAdd.classList.add("product-add");
-      menuTraduit[i].available ? btnAdd.disabled = false : btnAdd.disabled = true;
+      translatedMenu[i].available ? btnAdd.disabled = false : btnAdd.disabled = true;
       // Au clic, on appelle la méthode de l'objet
       btnAdd.addEventListener("click", () => {
-        order.add({id: menuTraduit[i].id, name: menuTraduit[i].name, price: menuTraduit[i].price});
+        order.add({id: translatedMenu[i].id, name: translatedMenu[i].name, price: translatedMenu[i].price});
         renderTicket();
       });
       btnAdd.textContent = "Ajouter";
@@ -155,6 +169,7 @@ function renderTicket(){
     btnRemove.textContent = " - ";
     btnRemove.addEventListener("click", () => {
       order.remove(line.id);
+      order.getReduction();
       renderTicket();
     });
     listElt.appendChild(lineName);
@@ -226,21 +241,9 @@ customerForm.addEventListener("submit", (e) => {
   }
 });
 
-// Étape 8 · Le code promo
+function checkPromoCode(code){
 
-// 1. Sélection des éléments (vérifiez bien les ID dans votre HTML !)
-const promoForm = document.querySelector("#promo-form"); // Corrigé : promo-form
-const promoInput = document.querySelector("#promo-code");
-const promoMessage = document.querySelector("#promo-message"); // Corrigé : promo-message
-const discountLabel = document.querySelector("#ticket-discount");
-const ticketTotal = document.querySelector("#ticket-total");
-
-// 2. Écoute du 'submit' sur le formulaire
-promoForm.addEventListener("submit", (e) => {
-  e.preventDefault(); // Empêche le rechargement de la page
-
-  const inputValue = promoInput.value.trim();
-
+  const inputValue = promoInput.value;
   // Cas 1 : Le champ est vide
   if (inputValue === "") {
     promoMessage.textContent = "Erreur de saisie !";
@@ -252,15 +255,23 @@ promoForm.addEventListener("submit", (e) => {
     promoMessage.textContent = "Code inconnu !";
     return; // On s'arrête ici
   }
-
   // Cas 3 : Le code est valide !
   promoMessage.textContent = "Code promo appliqué !";
+}
+// Étape 8 · Le code promo
 
-  // Exemple : Si le code "BARISTA" donne 10% de réduction (0.10)
-  const reductionCentimes = Math.round(order.getSubtotal() * 0.10);
+// 1. Sélection des éléments (vérifiez bien les ID dans votre HTML !)
+const promoForm = document.querySelector("#promo-form"); // Corrigé : promo-form
+const promoMessage = document.querySelector("#promo-message"); // Corrigé : promo-message
+const ticketTotal = document.querySelector("#ticket-total");
 
-  const reductionEuros = formatPrice(reductionCentimes)
-  discountLabel.textContent = `-${reductionEuros}`;
+// 2. Écoute du 'submit' sur le formulaire
+promoForm.addEventListener("submit", (e) => {
+  e.preventDefault(); // Empêche le rechargement de la page
+
+  checkPromoCode(promoInput.value.trim());
+
+  order.getReduction();
 
   ticketTotal.textContent = formatPrice(Number(order.getSubtotal()) - Number(reductionCentimes));
 });
