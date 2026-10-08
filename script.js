@@ -175,16 +175,17 @@ function checkPromoCode(code){
   // Cas 1 : Le champ est vide
   if (code === "") {
     promoMessage.textContent = "Erreur de saisie !";
-    return; // On s'arrête ici
+    return false; // On s'arrête ici
   }
 
   // Cas 2 : On compare tout en minuscules 💡
   if (code.toLowerCase() !== "barista") {
     promoMessage.textContent = "Code inconnu !";
-    return; // On s'arrête ici
+    return false; // On s'arrête ici
   }
   // Cas 3 : Le code est valide !
   promoMessage.textContent = "Code promo appliqué !";
+  return true;
 }
 // Étape 8 · Le code promo
 
@@ -197,9 +198,9 @@ const ticketTotal = document.querySelector("#ticket-total");
 promoForm.addEventListener("submit", (e) => {
   e.preventDefault(); // Empêche le rechargement de la page
 
-  checkPromoCode(orderElements.promoInput.value.trim());
-
-  order.getReduction();
+  if (checkPromoCode(orderElements.promoInput.value.trim())){
+    order.getReduction();
+  }
 
   ticketTotal.textContent = formatPrice(Number(order.getSubtotal()) - Number(reductionCentimes));
 });
