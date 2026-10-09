@@ -49,14 +49,13 @@ export const order = {
             this.isPromoApplied = false; // Désactive la promo
         }
     },
-    getReduction(){
+    getReduction() {
         let reductionCentimes = 0;
         if (this.lines.length > 0 && this.isPromoApplied) {
             reductionCentimes = Math.round(this.getSubtotal() * 0.10);
             const reductionEuros = formatPrice(reductionCentimes)
             orderElements.discountLabel.textContent = `-${reductionEuros}`;
-        }
-        else{
+        } else {
             document.querySelector("#ticket-discount").textContent = formatPrice(0);
         }
         return reductionCentimes;

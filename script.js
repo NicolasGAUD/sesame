@@ -201,8 +201,6 @@ promoElements.promoForm.addEventListener("submit", (e) => {
   ticketElements.ticketTotal.textContent = formatPrice(Number(order.getSubtotal()) - Number(reductionCentimes));
 });
 
-
-
 renderMenu();
 // === renderMenu("all"); see arg default
 filterByCategory();
