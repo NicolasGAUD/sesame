@@ -50,14 +50,15 @@ export const order = {
         }
     },
     getReduction(){
+        let reductionCentimes = 0;
         if (this.lines.length > 0 && this.isPromoApplied) {
-            const reductionCentimes = Math.round(this.getSubtotal() * 0.10);
+            reductionCentimes = Math.round(this.getSubtotal() * 0.10);
             const reductionEuros = formatPrice(reductionCentimes)
             orderElements.discountLabel.textContent = `-${reductionEuros}`;
         }
         else{
             document.querySelector("#ticket-discount").textContent = formatPrice(0);
         }
+        return reductionCentimes;
     }
-
 };

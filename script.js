@@ -2,7 +2,7 @@ import {menu} from './menu.js';
 import {order, orderElements} from './order.js';
 import {categoryLabel, formatPrice} from './utils.js';
 
-//Afin de pouvoir débugguer order.lines dans la console.
+//Afin de pouvoir débugger order.lines dans la console.
 window.order = order;
 
 const customerElements = {
@@ -76,18 +76,14 @@ function renderMenu(categoryValue = "all"){
 }
 
 function renderTicket(){
-  // const ticketEmpty = document.querySelector("#ticket-empty");
-  // const ticketLines = document.querySelector("#ticket-lines");
-  // const ticketTotal = document.querySelector("#ticket-total");
-
-  ticketEmpty.textContent = "";
-  ticketLines.textContent = "";
-  ticketTotal.textContent = "0,00 €";
+  ticketElements.ticketEmpty.textContent = "";
+  ticketElements.ticketLines.textContent = "";
+  ticketElements.ticketTotal.textContent = "0,00 €";
 
   if (order.lines.length === 0) {
-    ticketEmpty.textContent = "Le ticket est vide.";
+    ticketElements.ticketEmpty.textContent = "Le ticket est vide.";
     // was missing just this line for me to search a long time
-    promoMessage.textContent = "";
+    promoElements.promoMessage.textContent = "";
     return;
   }
 
@@ -122,11 +118,17 @@ function renderTicket(){
     listElt.appendChild(linePrice);
     listElt.appendChild(btnRemove);
 
-    ticketLines.appendChild(listElt);
+    ticketElements.ticketLines.appendChild(listElt);
 
+    let total = 0;
     // Calcul et affichage du total général de la commande
-    const total = formatPrice(order.getSubtotal());
-    ticketTotal.textContent = `${total}`;
+    if (order.isPromoApplied){
+      total = formatPrice(order.getSubtotal() - order.getReduction());
+    }
+    else{
+      total = formatPrice(order.getSubtotal());
+    }
+    ticketElements.ticketTotal.textContent = `${total}`;
   }
 }
 
@@ -156,65 +158,51 @@ function filterByCategory() {
 
 // En HTML, l'événement submit ne se déclenche que sur une balise <form>
 // On sélectionne le formulaire global et l'input
-// const customerForm = document.querySelector("#customer-form");
-// const customerInput = document.querySelector("#customer-name");
-// const customerError = document.querySelector("#customer-error");
-// const ticketTitle = document.querySelector("#ticket-title");
-
 // On écoute le 'submit' sur le FORMULAIRE
-customerForm.addEventListener("submit", (e) => {
+customerElements.customerForm.addEventListener("submit", (e) => {
   // CRITIQUE : Empêche la page de se recharger et de tout perdre
   e.preventDefault();
 
-  // On récupère la valeur de l'input AU MOMENT du clic de validation
-  const customerName = customerInput.value.trim();
+  const customerName = customerElements.customerInput.value.trim();
   if (customerName === "") {
-    customerError.textContent = "Erreur de saisie ! ";
-    ticketTitle.textContent = "Ticket"
+    customerElements.customerError.textContent = "Erreur de saisie ! ";
+    ticketElements.ticketTitle.textContent = "Ticket"
   }
   else {
-    ticketTitle.textContent = `Ticket de ${customerName}`;
+    ticketElements.ticketTitle.textContent = `Ticket de ${customerName}`;
   }
 });
 
 function checkPromoCode(code){
 
-  // Cas 1 : Le champ est vide
   if (code === "") {
-    promoMessage.textContent = "Erreur de saisie !";
+    promoElements.promoMessage.textContent = "Erreur de saisie !";
     return false; // On s'arrête ici
+  }
+  if (code.toLowerCase() !== "barista") {
+    promoElements.promoMessage.textContent = "Code inconnu !";
+    return false;
   }
 
-  // Cas 2 : On compare tout en minuscules 💡
-  if (code.toLowerCase() !== "barista") {
-    promoMessage.textContent = "Code inconnu !";
-    return false; // On s'arrête ici
-  }
-  // Cas 3 : Le code est valide !
-  promoMessage.textContent = "Code promo appliqué !";
+  promoElements.promoMessage.textContent = "Code promo appliqué !";
   order.isPromoApplied = true;
   return true;
 }
 
-// Sélection des éléments (vérifiez bien les ID dans votre HTML !)
-// const promoForm = document.querySelector("#promo-form");
-// const promoMessage = document.querySelector("#promo-message");
-// const ticketTotal = document.querySelector("#ticket-total");
+promoElements.promoForm.addEventListener("submit", (e) => {
+  e.preventDefault();
 
-
-// Écoute du 'submit' sur le formulaire
-promoForm.addEventListener("submit", (e) => {
-  e.preventDefault(); // Empêche le rechargement de la page
+  let reductionCentimes = 0;
 
   if (checkPromoCode(orderElements.promoInput.value.trim())){
-    order.getReduction();
+    reductionCentimes = order.getReduction();
   }
 
-  ticketTotal.textContent = formatPrice(Number(order.getSubtotal()) - Number(reductionCentimes));
+  ticketElements.ticketTotal.textContent = formatPrice(Number(order.getSubtotal()) - Number(reductionCentimes));
 });
+
+
 
 renderMenu();
 // === renderMenu("all"); see arg default
-
-// ⚠️ N'oubliez pas d'appeler cette fonction une fois au démarrage de votre script !
 filterByCategory();
