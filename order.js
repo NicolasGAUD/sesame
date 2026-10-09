@@ -40,7 +40,8 @@ export const order = {
                 }
                 // return; // break sort de la boucle, return de la fcontion
                 // si return, le code 2. ne serait pas executé.
-                break; // On sort de la boucle dès qu'on a trouvé et traité l'élément
+                break; // On sort de la boucle dès qu'on a trouv
+                // é et traité l'élément
             }
         }
 
