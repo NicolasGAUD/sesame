@@ -7,21 +7,22 @@ export const orderElements = {
 
 export const order = {
     lines: [],
+    isPromoApplied: false,
 
     add(product) {
-        // 1. On cherche si le produit est déjà présent dans le panier
+        // On cherche si le produit est déjà présent dans le panier
         const existingLine = this.lines.find(line => line.id === product.id);
 
         if (existingLine) {
-            // 2. S'il existe, on augmente sa quantité
+            // S'il existe, on augmente sa quantité
             existingLine.quantity++;
         } else {
-            // 3. S'il n'existe pas, on l'ajoute en créant une nouvelle ligne propre
+            // S'il n'existe pas, on l'ajoute en créant une nouvelle ligne propre
             this.lines.push({
                 id: product.id,
                 name: product.name,
                 price: product.price,
-                quantity: 1 // Initialisation à 1
+                quantity: 1
             });
         }
     },
@@ -30,9 +31,10 @@ export const order = {
         return this.lines.reduce((total, line) => total + (line.price * line.quantity), 0);
     },
     remove(id) {
-        // 1. On cherche et on met à jour l'élément dans le panier
+        // On cherche et on met à jour l'élément dans le panier
         for (let i = 0; i < this.lines.length; i++) {
             if (this.lines[i].id === id) {
+                //const existingLine = this.lines.find(line => line.id === id);
                 if (this.lines[i].quantity > 1) {
                     this.lines[i].quantity--;
                 } else {
@@ -45,13 +47,16 @@ export const order = {
             }
         }
 
-        // 2. CORRECTION : On vérifie SI le panier est vide APRÈS la suppression
-        if (this.lines.length === 0 && typeof orderElements.promoInput !== 'undefined') {
-            orderElements.promoInput.value = '';
+        // On vérifie SI le panier est vide APRÈS la suppression
+        if (this.lines.length === 0) {
+            if (orderElements.promoInput) {
+                orderElements.promoInput.value = ''; // Vide l'input HTML
+            }
+            this.isPromoApplied = false; // Désactive la promo
         }
     },
     getReduction(){
-        if (this.lines.length > 0) {
+        if (this.lines.length > 0 && this.isPromoApplied) {
             const reductionCentimes = Math.round(this.getSubtotal() * 0.10);
             const reductionEuros = formatPrice(reductionCentimes)
             orderElements.discountLabel.textContent = `-${reductionEuros}`;
@@ -60,4 +65,5 @@ export const order = {
             document.querySelector("#ticket-discount").textContent = formatPrice(0);
         }
     }
+
 };

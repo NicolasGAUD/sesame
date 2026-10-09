@@ -4,6 +4,7 @@ import {categoryLabel, formatPrice} from './utils.js';
 
 //Afin de pouvoir débugguer order.lines dans la console.
 window.order = order;
+let isPromoApplied = false;
 
 const translatedMenu = menu.map(item => {
   return {
@@ -99,7 +100,6 @@ function renderTicket(){
     btnRemove.textContent = " - ";
     btnRemove.addEventListener("click", () => {
       order.remove(line.id);
-      //TODO
       order.getReduction();
       renderTicket();
     });
@@ -186,6 +186,7 @@ function checkPromoCode(code){
   }
   // Cas 3 : Le code est valide !
   promoMessage.textContent = "Code promo appliqué !";
+  order.isPromoApplied = true;
   return true;
 }
 // Étape 8 · Le code promo
@@ -195,11 +196,13 @@ const promoForm = document.querySelector("#promo-form"); // Corrigé : promo-for
 const promoMessage = document.querySelector("#promo-message"); // Corrigé : promo-message
 const ticketTotal = document.querySelector("#ticket-total");
 
+
 // 2. Écoute du 'submit' sur le formulaire
 promoForm.addEventListener("submit", (e) => {
   e.preventDefault(); // Empêche le rechargement de la page
 
   if (checkPromoCode(orderElements.promoInput.value.trim())){
+    isPromoApplied = true;
     order.getReduction();
   }
 
