@@ -31,20 +31,14 @@ export const order = {
         return this.lines.reduce((total, line) => total + (line.price * line.quantity), 0);
     },
     remove(id) {
-        // On cherche et on met à jour l'élément dans le panier
-        for (let i = 0; i < this.lines.length; i++) {
-            if (this.lines[i].id === id) {
-                //const existingLine = this.lines.find(line => line.id === id);
-                if (this.lines[i].quantity > 1) {
-                    this.lines[i].quantity--;
-                } else {
-                    this.lines.splice(i, 1);
-                }
-                // return; // break sort de la boucle, return de la fcontion
-                // si return, le code 2. ne serait pas executé.
-                break; // On sort de la boucle dès qu'on a trouv
-                // é et traité l'élément
-            }
+        const line = this.lines.find(item => item.id === id);
+        if (!line) return;
+
+        if (line.quantity > 1) {
+            line.quantity--;
+        } else {
+            // On reconstruit le tableau sans l'élément qui a une quantité de 1
+            this.lines = this.lines.filter(item => item.id !== id);
         }
 
         // On vérifie SI le panier est vide APRÈS la suppression

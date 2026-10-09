@@ -4,7 +4,25 @@ import {categoryLabel, formatPrice} from './utils.js';
 
 //Afin de pouvoir débugguer order.lines dans la console.
 window.order = order;
-let isPromoApplied = false;
+
+const customerElements = {
+  customerForm: document.querySelector("#customer-form"),
+  customerInput: document.querySelector("#customer-name"),
+  customerError: document.querySelector("#customer-error")
+};
+
+const promoElements = {
+  promoForm: document.querySelector("#promo-form"),
+  promoMessage: document.querySelector("#promo-message"),
+};
+
+const ticketElements = {
+  ticketTitle:  document.querySelector("#ticket-title"),
+  ticketTotal: document.querySelector("#ticket-total"),
+  ticketEmpty: document.querySelector("#ticket-empty"),
+  ticketLines: document.querySelector("#ticket-lines"),
+};
+
 
 const translatedMenu = menu.map(item => {
   return {
@@ -57,25 +75,20 @@ function renderMenu(categoryValue = "all"){
   }
 }
 
-renderMenu();
-// === renderMenu("all"); see arg default
-
-// Étape 4 · Afficher le ticket
-
 function renderTicket(){
-  const ticketEmpty = document.querySelector("#ticket-empty");
-  const ticketLines = document.querySelector("#ticket-lines");
-  const ticketTotal = document.querySelector("#ticket-total");
+  // const ticketEmpty = document.querySelector("#ticket-empty");
+  // const ticketLines = document.querySelector("#ticket-lines");
+  // const ticketTotal = document.querySelector("#ticket-total");
 
   ticketEmpty.textContent = "";
   ticketLines.textContent = "";
   ticketTotal.textContent = "0,00 €";
 
-  if (order.lines.length === 0) {     // On vide la liste des produits
-    ticketEmpty.textContent = "Le ticket est vide."; // On écrit le texte
+  if (order.lines.length === 0) {
+    ticketEmpty.textContent = "Le ticket est vide.";
     // was missing just this line for me to search a long time
     promoMessage.textContent = "";
-    return;                                // On arrête la fonction ici
+    return;
   }
 
   for (let i = 0; i < order.lines.length; i++) {
@@ -117,50 +130,43 @@ function renderTicket(){
   }
 }
 
-
-// Étape 6 · Filtrer par catégorie
-
 function filterByCategory() {
   const categoriesNav = document.querySelector("#categories");
   if (!categoriesNav) return;
 
   categoriesNav.addEventListener("click", (e) => {
-    // 1. Sécurité : on vérifie que l'élément cliqué est bien un <button>
+    // IA : Sécurité : on vérifie que l'élément cliqué est bien un <button>
     // Si l'utilisateur clique dans le vide entre deux boutons, on ne fait rien
     if (e.target.tagName !== "BUTTON") return;
 
     const btnClicked = e.target;
     const categoryValue = btnClicked.value; // Récupère "all", "coffee", "tea" ou "pastry"
 
-    // 2. Gestion des classes : on retire "is-active" de TOUS les boutons de la nav
+    //Gestion des classes : on retire "is-active" de TOUS les boutons de la nav
     const allButtons = categoriesNav.querySelectorAll("button");
     allButtons.forEach(btn => btn.classList.remove("is-active"));
 
-    // 3. On ajoute la classe uniquement sur le bouton cliqué
+    // On ajoute la classe uniquement sur le bouton cliqué
     btnClicked.classList.add("is-active");
 
-    // 4. On appelle votre fonction d'affichage en lui passant la catégorie à filtrer
+    // On appelle votre fonction d'affichage en lui passant la catégorie à filtrer
     renderMenu(categoryValue);
   });
 }
-// ⚠️ N'oubliez pas d'appeler cette fonction une fois au démarrage de votre script !
-filterByCategory();
 
-
-// Étape 7 · Le prénom du client
 // En HTML, l'événement submit ne se déclenche que sur une balise <form>
-// 1. On sélectionne le formulaire global et l'input
-const customerForm = document.querySelector("#customer-form");
-const customerInput = document.querySelector("#customer-name");
-const customerError = document.querySelector("#customer-error");
-const ticketTitle = document.querySelector("#ticket-title");
+// On sélectionne le formulaire global et l'input
+// const customerForm = document.querySelector("#customer-form");
+// const customerInput = document.querySelector("#customer-name");
+// const customerError = document.querySelector("#customer-error");
+// const ticketTitle = document.querySelector("#ticket-title");
 
-// 2. On écoute le 'submit' sur le FORMULAIRE
+// On écoute le 'submit' sur le FORMULAIRE
 customerForm.addEventListener("submit", (e) => {
-  // 3. 💡 CRITIQUE : Empêche la page de se recharger et de tout perdre
+  // CRITIQUE : Empêche la page de se recharger et de tout perdre
   e.preventDefault();
 
-  // 4. On récupère la valeur de l'input AU MOMENT du clic de validation
+  // On récupère la valeur de l'input AU MOMENT du clic de validation
   const customerName = customerInput.value.trim();
   if (customerName === "") {
     customerError.textContent = "Erreur de saisie ! ";
@@ -189,23 +195,26 @@ function checkPromoCode(code){
   order.isPromoApplied = true;
   return true;
 }
-// Étape 8 · Le code promo
 
-// 1. Sélection des éléments (vérifiez bien les ID dans votre HTML !)
-const promoForm = document.querySelector("#promo-form"); // Corrigé : promo-form
-const promoMessage = document.querySelector("#promo-message"); // Corrigé : promo-message
-const ticketTotal = document.querySelector("#ticket-total");
+// Sélection des éléments (vérifiez bien les ID dans votre HTML !)
+// const promoForm = document.querySelector("#promo-form");
+// const promoMessage = document.querySelector("#promo-message");
+// const ticketTotal = document.querySelector("#ticket-total");
 
 
-// 2. Écoute du 'submit' sur le formulaire
+// Écoute du 'submit' sur le formulaire
 promoForm.addEventListener("submit", (e) => {
   e.preventDefault(); // Empêche le rechargement de la page
 
   if (checkPromoCode(orderElements.promoInput.value.trim())){
-    isPromoApplied = true;
     order.getReduction();
   }
 
   ticketTotal.textContent = formatPrice(Number(order.getSubtotal()) - Number(reductionCentimes));
 });
 
+renderMenu();
+// === renderMenu("all"); see arg default
+
+// ⚠️ N'oubliez pas d'appeler cette fonction une fois au démarrage de votre script !
+filterByCategory();
